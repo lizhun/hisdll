@@ -264,6 +264,5 @@ __pycache__/
 *.dcu
 *.dproj.*
 *.rild
-*.ico
 *.identcache
 *.dll

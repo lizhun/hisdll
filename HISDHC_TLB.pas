@@ -85,7 +85,8 @@ var
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.BookedInfo(widestring(Input));
+   //str := soap.BookedInfo(widestring(Input));
+   str := soap.DHCWebInterface('RisBookedInfo',widestring(Input));
    Result := PWideChar(str);
 end;
 function  CancelBookedInfo(const Input: PWideChar): PWideChar; stdcall;
@@ -96,7 +97,8 @@ function  CancelBookedInfo(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.CancelBookedInfo(widestring(Input));
+  // str := soap.CancelBookedInfo(widestring(Input));
+   str := soap.DHCWebInterface('RisCancelBookedInfo',widestring(Input));
    Result := PWideChar(str);
 end;
 
@@ -108,7 +110,8 @@ function  CancelFeeApp(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.CancelFeeApp(widestring(Input));
+   //str := soap.CancelFeeApp(widestring(Input));
+     str := soap.DHCWebInterface('RisCancelFeeApp',widestring(Input));
    Result := PWideChar(str);
 end;
 
@@ -120,7 +123,8 @@ function  CancelReport(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.CancelReport(widestring(Input));
+   //str := soap.CancelReport(widestring(Input));
+      str := soap.DHCWebInterface('RisCancelReport',widestring(Input));
    Result := PWideChar(str);
 end;
 
@@ -132,7 +136,8 @@ function  CheckComplete(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.CheckComplete(widestring(Input));
+   //str := soap.CheckComplete(widestring(Input));
+      str := soap.DHCWebInterface('RisCheckComplete',widestring(Input));
    Result := PWideChar(str);
 end;
 
@@ -144,7 +149,8 @@ function  GetAppForm(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.GetAppForm(widestring(Input));
+  // str := soap.GetAppForm(widestring(Input));
+     str := soap.DHCWebInterface('GetAppForm',widestring(Input));
    Result := PWideChar(str);
 end;
 function  GetDictInfo(const Input: PWideChar): PWideChar; stdcall;
@@ -155,7 +161,8 @@ function  GetDictInfo(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.GetDictInfo(widestring(Input));
+   //str := soap.GetDictInfo(widestring(Input));
+      str := soap.DHCWebInterface('GetDictInfo',widestring(Input));
    Result := PWideChar(str);
 end;
 function  GetPatInfoToRIS(Input: PWideChar): PWideChar; stdcall;
@@ -166,7 +173,8 @@ var
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.GetPatInfoToRIS(widestring(Input));
+   //str := soap.GetPatInfoToRIS(widestring(Input));
+      str := soap.DHCWebInterface('GetPatInfo',widestring(Input));
    Result := PWideChar(str);
 end;
 function  GetPatOrdList(Input: PWideChar): PWideChar; stdcall;
@@ -177,7 +185,8 @@ var
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.GetPatOrdList(widestring(Input));
+   //str := soap.GetPatOrdList(widestring(Input));
+      str := soap.DHCWebInterface('RisGetPatOrdList',widestring(Input));
    Result := PWideChar(str);
 end;
 function  RegInfo(const Input: PWideChar): PWideChar; stdcall;
@@ -188,7 +197,8 @@ function  RegInfo(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.RegInfo(widestring(Input));
+  // str := soap.RegInfo(widestring(Input));
+     str := soap.DHCWebInterface('RisRegInfo',widestring(Input));
    Result := PWideChar(str);
 end;
 function  ReturnReports(const Input: PWideChar): PWideChar; stdcall;
@@ -199,7 +209,8 @@ function  ReturnReports(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.ReturnReports(widestring(Input));
+   //str := soap.ReturnReports(widestring(Input));
+      str := soap.DHCWebInterface('RisReturnReports',widestring(Input));
    Result := PWideChar(str);
 end;
 function  SendPatOrdListToRis(const Input: PWideChar): PWideChar; stdcall;
@@ -210,7 +221,8 @@ function  SendPatOrdListToRis(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.SendPatOrdListToRis(widestring(Input));
+   //str := soap.SendPatOrdListToRis(widestring(Input));
+      str := soap.DHCWebInterface('SendPatOrdListToRis',widestring(Input));
    Result := PWideChar(str);
 end;
 function  TestReturnReports(const Input: PWideChar): PWideChar; stdcall;
@@ -221,7 +233,8 @@ function  TestReturnReports(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.TestReturnReports(widestring(Input));
+   //str := soap.TestReturnReports(widestring(Input));
+      str := soap.DHCWebInterface('RisCancelFeeApp',widestring(Input));
    Result := PWideChar(str);
 end;
 
@@ -233,7 +246,21 @@ function  SaveAntCVResult(const Input: PWideChar): PWideChar; stdcall;
 begin
    rio := THTTPRIO.Create(nil);
    soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
-   str := soap.SaveAntCVResult(widestring(Input));
+   //str := soap.SaveAntCVResult(widestring(Input));
+      str := soap.DHCWebInterface('SaveAntCVResult',widestring(Input));
+   Result := PWideChar(str);
+end;
+
+function  AckAntCVResult(const Input: PWideChar): PWideChar; stdcall;
+    var
+   rio:THTTPRIO;
+   str:WideString;
+   soap :DHC.WebRisServiceSoap;
+begin
+   rio := THTTPRIO.Create(nil);
+   soap:= DHC.GetWebRisServiceSoap(True,GetWebSVRUrl,rio);
+   //str := soap.SaveAntCVResult(widestring(Input));
+   str := soap.DHCWebInterface('AckAntCVResult',widestring(Input));
    Result := PWideChar(str);
 end;
 
@@ -257,6 +284,7 @@ ReturnReports,
 SendPatOrdListToRis,
 TestReturnReports,
 SaveAntCVResult,
+AckAntCVResult,
 showweburl;
 
 

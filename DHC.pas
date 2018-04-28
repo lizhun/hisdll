@@ -58,6 +58,7 @@ type
     function  SendPatOrdListToRis(const Input: WideString): WideString; stdcall;
     function  SaveAntCVResult(const Input: WideString): WideString; stdcall;
     function  TestReturnReports(const Input: WideString): WideString; stdcall;
+    function  DHCWebInterface(const input1: WideString; const input2: WideString): WideString; stdcall;
   end;
 
 function GetWebRisServiceSoap(UseWSDL: Boolean=System.False; Addr: WideString=''; HTTPRIO: THTTPRIO = nil): WebRisServiceSoap;

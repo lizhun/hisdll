@@ -71,8 +71,8 @@ function GetWebRisServiceSoap(UseWSDL: Boolean; Addr: WideString; HTTPRIO: THTTP
 const
   defWSDL = 'http://172.18.0.36/csp/i-ris/DHC.RIS.BS.WebRisService.cls?wsdl';
   defURL  = 'http://172.18.0.36/csp/i-ris/DHC.RIS.BS.WebRisService.cls';
-  defSvc  = 'WebRisService';
-  defPrt  = 'WebRisServiceSoap';
+  defSvc  = 'DztRisService';
+  defPrt  = 'DztRisServiceSoap';
 var
   RIO: THTTPRIO;
 begin
@@ -107,7 +107,7 @@ end;
 
 initialization
   InvRegistry.RegisterInterface(TypeInfo(WebRisServiceSoap), 'http://tempuri.org', 'UTF-8');
-  InvRegistry.RegisterDefaultSOAPAction(TypeInfo(WebRisServiceSoap), 'http://tempuri.org/DHC.RIS.BS.WebRisService.%operationName%');
+  InvRegistry.RegisterDefaultSOAPAction(TypeInfo(WebRisServiceSoap), 'http://tempuri.org/DHC.Published.DztRisService.BS.DztRisService.DHCWebInterface');
   InvRegistry.RegisterInvokeOptions(TypeInfo(WebRisServiceSoap), ioDocument);
 
 end.

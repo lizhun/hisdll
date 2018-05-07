@@ -1,4 +1,4 @@
-unit HISDHC_TLB;
+﻿unit HISDHC_TLB;
 
 // ************************************************************************ //
 // WARNING
@@ -57,8 +57,6 @@ var
   gwebsvrurl: string;
   isDebug: Boolean;
 
-
-
 function WriteTxt(strWrite: WideString): Boolean;
 var
   wLogFile: TextFile;
@@ -66,8 +64,7 @@ var
   strTxtName, strContent: string;
 begin
   DateTime := now;
-  strTxtName := FormatdateTime('yyyy-mm-dd',
-    DateTime) + '_WSLog.txt';
+  strTxtName := FormatdateTime('yyyy-mm-dd', DateTime) + '_WSLog.txt';
   AssignFile(wLogFile, strTxtName);
   if FileExists(strTxtName) then
     Append(wLogFile)
@@ -109,19 +106,27 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  rio := THTTPRIO.create(nil);
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  if isDebug then
-  begin
-    WriteTxt(Input);
+  try
+    rio := THTTPRIO.create(nil);
+    soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
+    if isDebug then
+    begin
+      WriteTxt(Input);
+    end;
+    // str := soap.BookedInfo(widestring(Input));
+    str := soap.DHCWebInterface('RisBookedInfo', WideString(Input));
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    Result := PWideChar(str);
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
   end;
-  // str := soap.BookedInfo(widestring(Input));
-  str := soap.DHCWebInterface('RisBookedInfo', WideString(Input));
-  if isDebug then
-  begin
-    WriteTxt(str);
-  end;
-  Result := PWideChar(str);
 end;
 
 function CancelBookedInfo(const Input: PWideChar): PWideChar; stdcall;
@@ -130,19 +135,29 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  if isDebug then
-  begin
-    WriteTxt(str);
+  try
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    rio := THTTPRIO.create(nil);
+    soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
+    // str := soap.CancelBookedInfo(widestring(Input));
+    str := soap.DHCWebInterface('RisCancelBookedInfo', WideString(Input));
+    if isDebug then
+    begin
+      WriteTxt(Input);
+    end;
+    Result := PWideChar(str);
+
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
+
   end;
-  rio := THTTPRIO.create(nil);
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  // str := soap.CancelBookedInfo(widestring(Input));
-  str := soap.DHCWebInterface('RisCancelBookedInfo', WideString(Input));
-  if isDebug then
-  begin
-    WriteTxt(Input);
-  end;
-  Result := PWideChar(str);
 end;
 
 function CancelFeeApp(const Input: PWideChar): PWideChar; stdcall;
@@ -236,19 +251,28 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  if isDebug then
-  begin
-    WriteTxt(Input);
+  try
+    if isDebug then
+    begin
+      WriteTxt(Input);
+    end;
+    rio := THTTPRIO.create(nil);
+    soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
+    // str := soap.GetDictInfo(widestring(Input));
+    str := soap.DHCWebInterface('GetDictInfo', WideString(Input));
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    Result := PWideChar(str);
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
   end;
-  rio := THTTPRIO.create(nil);
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  // str := soap.GetDictInfo(widestring(Input));
-  str := soap.DHCWebInterface('GetDictInfo', WideString(Input));
-  if isDebug then
-  begin
-    WriteTxt(str);
-  end;
-  Result := PWideChar(str);
+
 end;
 
 function GetPatInfoToRIS(Input: PWideChar): PWideChar; stdcall;
@@ -257,19 +281,27 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  if isDebug then
-  begin
-    WriteTxt(Input);
+  try
+    if isDebug then
+    begin
+      WriteTxt(Input);
+    end;
+    rio := THTTPRIO.create(nil);
+    soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
+    // str := soap.GetPatInfoToRIS(widestring(Input));
+    str := soap.DHCWebInterface('GetPatInfo', WideString(Input));
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    Result := PWideChar(str);
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
   end;
-  rio := THTTPRIO.create(nil);
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  // str := soap.GetPatInfoToRIS(widestring(Input));
-  str := soap.DHCWebInterface('GetPatInfo', WideString(Input));
-  if isDebug then
-  begin
-    WriteTxt(str);
-  end;
-  Result := PWideChar(str);
 end;
 
 function GetPatOrdList(Input: PWideChar): PWideChar; stdcall;
@@ -278,19 +310,28 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  if isDebug then
-  begin
-    WriteTxt(Input);
+  try
+    if isDebug then
+    begin
+      WriteTxt(Input);
+    end;
+    rio := THTTPRIO.create(nil);
+    soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
+    // str := soap.GetPatOrdList(widestring(Input));
+    str := soap.DHCWebInterface('RisGetPatOrdList', WideString(Input));
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    Result := PWideChar(str);
+
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
   end;
-  rio := THTTPRIO.create(nil);
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  // str := soap.GetPatOrdList(widestring(Input));
-  str := soap.DHCWebInterface('RisGetPatOrdList', WideString(Input));
-  if isDebug then
-  begin
-    WriteTxt(str);
-  end;
-  Result := PWideChar(str);
 end;
 
 function RegInfo(const Input: PWideChar): PWideChar; stdcall;
@@ -299,19 +340,27 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  if isDebug then
-  begin
-    WriteTxt(Input);
+  try
+    if isDebug then
+    begin
+      WriteTxt(Input);
+    end;
+    rio := THTTPRIO.create(nil);
+    soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
+    // str := soap.RegInfo(widestring(Input));
+    str := soap.DHCWebInterface('RisRegInfo', WideString(Input));
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    Result := PWideChar(str);
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
   end;
-  rio := THTTPRIO.create(nil);
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  // str := soap.RegInfo(widestring(Input));
-  str := soap.DHCWebInterface('RisRegInfo', WideString(Input));
-  if isDebug then
-  begin
-    WriteTxt(str);
-  end;
-  Result := PWideChar(str);
 end;
 
 function ReturnReports(const Input: PWideChar): PWideChar; stdcall;
@@ -320,19 +369,27 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  if isDebug then
-  begin
-    WriteTxt(Input);
+  try
+    if isDebug then
+    begin
+      WriteTxt(Input);
+    end;
+    rio := THTTPRIO.create(nil);
+    soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
+    // str := soap.ReturnReports(widestring(Input));
+    str := soap.DHCWebInterface('RisReturnReports', WideString(Input));
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    Result := PWideChar(str);
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
   end;
-  rio := THTTPRIO.create(nil);
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  // str := soap.ReturnReports(widestring(Input));
-  str := soap.DHCWebInterface('RisReturnReports', WideString(Input));
-  if isDebug then
-  begin
-    WriteTxt(str);
-  end;
-  Result := PWideChar(str);
 end;
 
 function SendPatOrdListToRis(const Input: PWideChar): PWideChar; stdcall;
@@ -341,19 +398,27 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  rio := THTTPRIO.create(nil);
-  if isDebug then
-  begin
-    WriteTxt(Input);
+  try
+    rio := THTTPRIO.create(nil);
+    if isDebug then
+    begin
+      WriteTxt(Input);
+    end;
+    soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
+    // str := soap.SendPatOrdListToRis(widestring(Input));
+    str := soap.DHCWebInterface('SendPatOrdListToRis', WideString(Input));
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    Result := PWideChar(str);
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
   end;
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  // str := soap.SendPatOrdListToRis(widestring(Input));
-  str := soap.DHCWebInterface('SendPatOrdListToRis', WideString(Input));
-  if isDebug then
-  begin
-    WriteTxt(str);
-  end;
-  Result := PWideChar(str);
 end;
 
 function TestReturnReports(const Input: PWideChar): PWideChar; stdcall;
@@ -383,19 +448,27 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  rio := THTTPRIO.create(nil);
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  // str := soap.SaveAntCVResult(widestring(Input));
-  if isDebug then
-  begin
-    WriteTxt(Input);
+  try
+    rio := THTTPRIO.create(nil);
+    soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
+    // str := soap.SaveAntCVResult(widestring(Input));
+    if isDebug then
+    begin
+      WriteTxt(Input);
+    end;
+    // str := soap.DHCWebInterface('SaveAntCVResult', WideString(Input));
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    Result := PWideChar(str);
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
   end;
- // str := soap.DHCWebInterface('SaveAntCVResult', WideString(Input));
-  if isDebug then
-  begin
-    WriteTxt(str);
-  end;
-  Result := PWideChar(str);
 end;
 
 function AckAntCVResult(const Input: PWideChar): PWideChar; stdcall;

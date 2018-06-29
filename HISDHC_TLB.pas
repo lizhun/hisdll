@@ -1,4 +1,4 @@
-﻿unit HISDHC_TLB;
+unit HISDHC_TLB;
 
 // ************************************************************************ //
 // WARNING
@@ -421,26 +421,6 @@ begin
   end;
 end;
 
-function TestReturnReports(const Input: PWideChar): PWideChar; stdcall;
-var
-  rio: THTTPRIO;
-  str: WideString;
-  soap: DHC.WebRisServiceSoap;
-begin
-  rio := THTTPRIO.create(nil);
-  if isDebug then
-  begin
-    WriteTxt(Input);
-  end;
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  // str := soap.TestReturnReports(widestring(Input));
-  str := soap.DHCWebInterface('RisCancelFeeApp', WideString(Input));
-  if isDebug then
-  begin
-    WriteTxt(str);
-  end;
-  Result := PWideChar(str);
-end;
 
 function SaveAntCVResult(const Input: PWideChar): PWideChar; stdcall;
 var
@@ -456,7 +436,7 @@ begin
     begin
       WriteTxt(Input);
     end;
-    // str := soap.DHCWebInterface('SaveAntCVResult', WideString(Input));
+    str := soap.DHCWebInterface('SaveAntCVResult', WideString(Input));
     if isDebug then
     begin
       WriteTxt(str);
@@ -471,17 +451,32 @@ begin
   end;
 end;
 
-function AckAntCVResult(const Input: PWideChar): PWideChar; stdcall;
+function DHCWebInterface(const Input: PWideChar;const Input1: PWideChar): PWideChar; stdcall;
 var
   rio: THTTPRIO;
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  rio := THTTPRIO.create(nil);
-  soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-  // str := soap.SaveAntCVResult(widestring(Input));
-  str := soap.DHCWebInterface('AckAntCVResult', WideString(Input));
-  Result := PWideChar(str);
+  try
+    rio := THTTPRIO.create(nil);
+    soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
+    if isDebug then
+    begin
+      WriteTxt(Input+': '+Input1);
+    end;
+    str := soap.DHCWebInterface(Input, WideString(Input1));
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    Result := PWideChar(str);
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
+  end;
 end;
 
 function showweburl: PWideChar; stdcall;
@@ -491,7 +486,7 @@ end;
 
 exports BookedInfo, CancelBookedInfo, CancelFeeApp, CancelReport, CheckComplete,
   GetAppForm, GetDictInfo, GetPatInfoToRIS, GetPatOrdList, RegInfo,
-  ReturnReports, SendPatOrdListToRis, TestReturnReports, SaveAntCVResult,
-  AckAntCVResult, showweburl;
+  ReturnReports, SendPatOrdListToRis,  SaveAntCVResult,DHCWebInterface ,
+   showweburl;
 
 end.

@@ -266,3 +266,15 @@ __pycache__/
 *.rild
 *.identcache
 *.dll
+*.pyc
+*.~pas
+*.dcu
+*.res
+*.cfg
+*.pof
+*.dof
+*.~dfm
+*.~dpr
+*.exe
+*.ddp
+*.~ddp

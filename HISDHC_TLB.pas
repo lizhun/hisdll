@@ -32,7 +32,7 @@ unit HISDHC_TLB;
 
 interface
 
-uses Windows, ActiveX, Classes, StdVCL, Variants, IniFiles, SysUtils, DHC,
+uses Windows, ActiveX, Classes, StdVCL, Variants, IniFiles, SysUtils, DHC,RegShareDoc,
   SOAPHTTPClient;
 
 // *********************************************************************//
@@ -55,6 +55,7 @@ uses ComObj;
 
 var
   gwebsvrurl: string;
+  gwebsvrdocurl: string;
   isDebug: Boolean;
 
 function WriteTxt(strWrite: WideString): Boolean;
@@ -86,18 +87,38 @@ begin
   begin
     if FileExists('weburl.ini') then
     begin
-      myinifile := TIniFile.create(getcurrentdir + '\weburl.ini'); // 打开 文件。
-      gwebsvrurl := myinifile.readstring('webservice', 'url', ''); // 读取字符型数据。
-      isDebug := myinifile.ReadBool('webservice', 'debug', False); // 读取字符型数据。
+      myinifile := TIniFile.create(getcurrentdir + '\weburl.ini'); //
+      gwebsvrurl := myinifile.readstring('webservice', 'url', ''); //
+      isDebug := myinifile.ReadBool('webservice', 'debug', False); // 
       FreeAndNil(myinifile);
     end
     else
     begin
-      gwebsvrurl :=
-        'http://172.18.0.36/csp/i-ris/DHC.RIS.BS.WebRisService.cls?wsdl';
+      gwebsvrurl := 'http://172.18.0.36/csp/i-ris/DHC.RIS.BS.WebRisService.cls?wsdl';
     end;
   end;
   Result := gwebsvrurl;
+end;
+
+function GetDocWebSVRUrl: string;
+var
+  myinifile: TIniFile;
+begin
+  if gwebsvrdocurl = '' then
+  begin
+    if FileExists('weburl.ini') then
+    begin
+      myinifile := TIniFile.create(getcurrentdir + '\weburl.ini'); //
+      gwebsvrdocurl := myinifile.readstring('webservice', 'docurl', ''); //
+      isDebug := myinifile.ReadBool('webservice', 'debug', False); //
+      FreeAndNil(myinifile);
+    end
+    else
+    begin
+      gwebsvrdocurl := 'http://172.18.53.34/csp/hsb/hsb.DhcEns.BS.WebMOHDocumentService.cls?wsdl';
+    end;
+  end;
+  Result := gwebsvrdocurl;
 end;
 
 function BookedInfo(Input: PWideChar): PWideChar; stdcall;
@@ -479,6 +500,34 @@ begin
   end;
 end;
 
+function RegisterDocument(const Input: PWideChar;const Input1: PWideChar): PWideChar; stdcall;
+var
+  rio: THTTPRIO;
+  str: WideString;
+  soap: RegShareDoc.WebMOHDocumentServiceSoap;
+begin
+  try
+    rio := THTTPRIO.create(nil);
+    soap := RegShareDoc.GetWebMOHDocumentServiceSoap(true, GetDocWebSVRUrl, rio);
+    if isDebug then
+    begin
+      WriteTxt(Input+': '+Input1);
+    end;
+    str := soap.HIPMessageServer(WideString(Input), WideString(Input1));
+    if isDebug then
+    begin
+      WriteTxt(str);
+    end;
+    Result := PWideChar(str);
+  except
+    on ex: Exception do
+      if isDebug then
+      begin
+        WriteTxt(ex.Message);
+      end;
+  end;
+end;
+
 function showweburl: PWideChar; stdcall;
 begin
   Result := PWideChar(GetWebSVRUrl);
@@ -486,7 +535,7 @@ end;
 
 exports BookedInfo, CancelBookedInfo, CancelFeeApp, CancelReport, CheckComplete,
   GetAppForm, GetDictInfo, GetPatInfoToRIS, GetPatOrdList, RegInfo,
-  ReturnReports, SendPatOrdListToRis,  SaveAntCVResult,DHCWebInterface ,
+  ReturnReports, SendPatOrdListToRis,  SaveAntCVResult,DHCWebInterface,RegisterDocument,
    showweburl;
 
 end.

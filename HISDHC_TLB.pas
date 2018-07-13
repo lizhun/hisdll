@@ -32,8 +32,9 @@ unit HISDHC_TLB;
 
 interface
 
-uses Windows, ActiveX, Classes, StdVCL, Variants, IniFiles, SysUtils, DHC,RegShareDoc,
-  SOAPHTTPClient;
+uses
+  Windows, ActiveX, Classes, StdVCL, Variants, IniFiles, SysUtils, DHC,
+  RegShareDoc, SOAPHTTPClient;
 
 // *********************************************************************//
 // GUIDS declared in the TypeLibrary. Following prefixes are used:
@@ -46,17 +47,28 @@ const
   // TypeLibrary Major and minor versions
   HISDHCMajorVersion = 1;
   HISDHCMinorVersion = 0;
-
   LIBID_HISDHC: TGUID = '{C8B52066-33B9-4F61-AEA0-BCBBE65BC7E6}';
 
 implementation
 
-uses ComObj;
+uses
+  ComObj;
 
 var
   gwebsvrurl: string;
   gwebsvrdocurl: string;
-  isDebug: Boolean;
+  gisDebug: Boolean;
+
+function GetMyPath: string;
+var
+  ModuleName: string;
+  str: string;
+begin
+  SetLength(ModuleName, 255);
+  GetModuleFileName(HInstance, PChar(ModuleName), Length(ModuleName));
+  str := ExtractFileDir(ModuleName);
+  Result := str
+end;
 
 function WriteTxt(strWrite: WideString): Boolean;
 var
@@ -65,7 +77,7 @@ var
   strTxtName, strContent: string;
 begin
   DateTime := now;
-  strTxtName := FormatdateTime('yyyy-mm-dd', DateTime) + '_WSLog.txt';
+  strTxtName := GetMyPath + '\' + FormatdateTime('yyyy-mm-dd', DateTime) + '_WSLog.txt';
   AssignFile(wLogFile, strTxtName);
   if FileExists(strTxtName) then
     Append(wLogFile)
@@ -82,20 +94,15 @@ end;
 function GetWebSVRUrl: string;
 var
   myinifile: TIniFile;
+  mypath: string;
 begin
-  if gwebsvrurl = '' then
+  mypath := GetMyPath + '\weburl.ini';
+  if FileExists(mypath) then
   begin
-    if FileExists('weburl.ini') then
-    begin
-      myinifile := TIniFile.create(getcurrentdir + '\weburl.ini'); //
-      gwebsvrurl := myinifile.readstring('webservice', 'url', ''); //
-      isDebug := myinifile.ReadBool('webservice', 'debug', False); // 
-      FreeAndNil(myinifile);
-    end
-    else
-    begin
-      gwebsvrurl := 'http://172.18.0.36/csp/i-ris/DHC.RIS.BS.WebRisService.cls?wsdl';
-    end;
+    myinifile := TIniFile.create(mypath); //
+    gwebsvrurl := myinifile.readstring('webservice', 'url', ''); //
+    gisDebug := myinifile.ReadBool('webservice', 'debug', False); //
+    FreeAndNil(myinifile);
   end;
   Result := gwebsvrurl;
 end;
@@ -103,20 +110,15 @@ end;
 function GetDocWebSVRUrl: string;
 var
   myinifile: TIniFile;
+  mypath: string;
 begin
-  if gwebsvrdocurl = '' then
+  mypath := GetMyPath + '\weburl.ini';
+  if FileExists(mypath) then
   begin
-    if FileExists('weburl.ini') then
-    begin
-      myinifile := TIniFile.create(getcurrentdir + '\weburl.ini'); //
-      gwebsvrdocurl := myinifile.readstring('webservice', 'docurl', ''); //
-      isDebug := myinifile.ReadBool('webservice', 'debug', False); //
-      FreeAndNil(myinifile);
-    end
-    else
-    begin
-      gwebsvrdocurl := 'http://172.18.53.34/csp/hsb/hsb.DhcEns.BS.WebMOHDocumentService.cls?wsdl';
-    end;
+    myinifile := TIniFile.create(mypath); //
+    gwebsvrdocurl := myinifile.readstring('webservice', 'docurl', ''); //
+    gisDebug := myinifile.ReadBool('webservice', 'debug', False); //
+    FreeAndNil(myinifile);
   end;
   Result := gwebsvrdocurl;
 end;
@@ -130,20 +132,20 @@ begin
   try
     rio := THTTPRIO.create(nil);
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(Input);
     end;
     // str := soap.BookedInfo(widestring(Input));
     str := soap.DHCWebInterface('RisBookedInfo', WideString(Input));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
     Result := PWideChar(str);
   except
     on ex: Exception do
-      if isDebug then
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
@@ -157,7 +159,7 @@ var
   soap: DHC.WebRisServiceSoap;
 begin
   try
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
@@ -165,7 +167,7 @@ begin
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
     // str := soap.CancelBookedInfo(widestring(Input));
     str := soap.DHCWebInterface('RisCancelBookedInfo', WideString(Input));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(Input);
     end;
@@ -173,7 +175,7 @@ begin
 
   except
     on ex: Exception do
-      if isDebug then
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
@@ -187,7 +189,7 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  if isDebug then
+  if gisDebug then
   begin
     WriteTxt(Input);
   end;
@@ -195,7 +197,7 @@ begin
   soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
   // str := soap.CancelFeeApp(widestring(Input));
   str := soap.DHCWebInterface('RisCancelFeeApp', WideString(Input));
-  if isDebug then
+  if gisDebug then
   begin
     WriteTxt(str);
   end;
@@ -208,7 +210,7 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  if isDebug then
+  if gisDebug then
   begin
     WriteTxt(Input);
   end;
@@ -216,7 +218,7 @@ begin
   soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
   // str := soap.CancelReport(widestring(Input));
   str := soap.DHCWebInterface('RisCancelReport', WideString(Input));
-  if isDebug then
+  if gisDebug then
   begin
     WriteTxt(str);
   end;
@@ -229,7 +231,7 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  if isDebug then
+  if gisDebug then
   begin
     WriteTxt(Input);
   end;
@@ -237,7 +239,7 @@ begin
   soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
   // str := soap.CheckComplete(widestring(Input));
   str := soap.DHCWebInterface('RisCheckComplete', WideString(Input));
-  if isDebug then
+  if gisDebug then
   begin
     WriteTxt(str);
   end;
@@ -250,7 +252,7 @@ var
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
-  if isDebug then
+  if gisDebug then
   begin
     WriteTxt(Input);
   end;
@@ -258,7 +260,7 @@ begin
   soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
   // str := soap.GetAppForm(widestring(Input));
   str := soap.DHCWebInterface('GetAppForm', WideString(Input));
-  if isDebug then
+  if gisDebug then
   begin
     WriteTxt(str);
   end;
@@ -273,7 +275,7 @@ var
   soap: DHC.WebRisServiceSoap;
 begin
   try
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(Input);
     end;
@@ -281,14 +283,14 @@ begin
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
     // str := soap.GetDictInfo(widestring(Input));
     str := soap.DHCWebInterface('GetDictInfo', WideString(Input));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
     Result := PWideChar(str);
   except
     on ex: Exception do
-      if isDebug then
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
@@ -303,7 +305,7 @@ var
   soap: DHC.WebRisServiceSoap;
 begin
   try
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(Input);
     end;
@@ -311,14 +313,14 @@ begin
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
     // str := soap.GetPatInfoToRIS(widestring(Input));
     str := soap.DHCWebInterface('GetPatInfo', WideString(Input));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
     Result := PWideChar(str);
   except
     on ex: Exception do
-      if isDebug then
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
@@ -332,7 +334,7 @@ var
   soap: DHC.WebRisServiceSoap;
 begin
   try
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(Input);
     end;
@@ -340,7 +342,7 @@ begin
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
     // str := soap.GetPatOrdList(widestring(Input));
     str := soap.DHCWebInterface('RisGetPatOrdList', WideString(Input));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
@@ -348,7 +350,7 @@ begin
 
   except
     on ex: Exception do
-      if isDebug then
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
@@ -362,7 +364,7 @@ var
   soap: DHC.WebRisServiceSoap;
 begin
   try
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(Input);
     end;
@@ -370,14 +372,14 @@ begin
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
     // str := soap.RegInfo(widestring(Input));
     str := soap.DHCWebInterface('RisRegInfo', WideString(Input));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
     Result := PWideChar(str);
   except
     on ex: Exception do
-      if isDebug then
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
@@ -391,7 +393,7 @@ var
   soap: DHC.WebRisServiceSoap;
 begin
   try
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(Input);
     end;
@@ -399,14 +401,14 @@ begin
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
     // str := soap.ReturnReports(widestring(Input));
     str := soap.DHCWebInterface('RisReturnReports', WideString(Input));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
     Result := PWideChar(str);
   except
     on ex: Exception do
-      if isDebug then
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
@@ -421,27 +423,26 @@ var
 begin
   try
     rio := THTTPRIO.create(nil);
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(Input);
     end;
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
     // str := soap.SendPatOrdListToRis(widestring(Input));
     str := soap.DHCWebInterface('SendPatOrdListToRis', WideString(Input));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
     Result := PWideChar(str);
   except
     on ex: Exception do
-      if isDebug then
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
   end;
 end;
-
 
 function SaveAntCVResult(const Input: PWideChar): PWideChar; stdcall;
 var
@@ -453,54 +454,62 @@ begin
     rio := THTTPRIO.create(nil);
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
     // str := soap.SaveAntCVResult(widestring(Input));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(Input);
     end;
     str := soap.DHCWebInterface('SaveAntCVResult', WideString(Input));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
     Result := PWideChar(str);
   except
     on ex: Exception do
-      if isDebug then
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
   end;
 end;
 
-function DHCWebInterface(const Input: PWideChar;const Input1: PWideChar): PWideChar; stdcall;
+function DHCWebInterface(const Input: PWideChar; const Input1: PWideChar): PWideChar; stdcall;
 var
   rio: THTTPRIO;
   str: WideString;
   soap: DHC.WebRisServiceSoap;
 begin
   try
+
     rio := THTTPRIO.create(nil);
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
-    if isDebug then
+    if gisDebug then
     begin
-      WriteTxt(Input+': '+Input1);
+      WriteTxt(Input + ': ' + Input1);
     end;
     str := soap.DHCWebInterface(Input, WideString(Input1));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
     Result := PWideChar(str);
   except
     on ex: Exception do
-      if isDebug then
+    begin
+      MessageBox(0, PAnsiChar(GetMyPath), '', MB_OK);
+      MessageBox(0, PAnsiChar(GetWebSVRUrl), '', MB_OK);
+      MessageBox(0, PAnsiChar(WideCharToString(Input1)), '', MB_OK);
+      MessageBox(0, PAnsiChar(ex.Message), '', MB_OK);
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
+    end;
+
   end;
 end;
 
-function RegisterDocument(const Input: PWideChar;const Input1: PWideChar): PWideChar; stdcall;
+function RegisterDocument(const Input: PWideChar; const Input1: PWideChar): PWideChar; stdcall;
 var
   rio: THTTPRIO;
   str: WideString;
@@ -509,19 +518,19 @@ begin
   try
     rio := THTTPRIO.create(nil);
     soap := RegShareDoc.GetWebMOHDocumentServiceSoap(true, GetDocWebSVRUrl, rio);
-    if isDebug then
+    if gisDebug then
     begin
-      WriteTxt(Input+': '+Input1);
+      WriteTxt(Input + ': ' + Input1);
     end;
     str := soap.HIPMessageServer(WideString(Input), WideString(Input1));
-    if isDebug then
+    if gisDebug then
     begin
       WriteTxt(str);
     end;
     Result := PWideChar(str);
   except
     on ex: Exception do
-      if isDebug then
+      if gisDebug then
       begin
         WriteTxt(ex.Message);
       end;
@@ -533,9 +542,23 @@ begin
   Result := PWideChar(GetWebSVRUrl);
 end;
 
-exports BookedInfo, CancelBookedInfo, CancelFeeApp, CancelReport, CheckComplete,
-  GetAppForm, GetDictInfo, GetPatInfoToRIS, GetPatOrdList, RegInfo,
-  ReturnReports, SendPatOrdListToRis,  SaveAntCVResult,DHCWebInterface,RegisterDocument,
-   showweburl;
+exports
+  BookedInfo,
+  CancelBookedInfo,
+  CancelFeeApp,
+  CancelReport,
+  CheckComplete,
+  GetAppForm,
+  GetDictInfo,
+  GetPatInfoToRIS,
+  GetPatOrdList,
+  RegInfo,
+  ReturnReports,
+  SendPatOrdListToRis,
+  SaveAntCVResult,
+  DHCWebInterface,
+  RegisterDocument,
+  showweburl;
 
 end.
+

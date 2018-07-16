@@ -55,19 +55,25 @@ uses
   ComObj;
 
 var
-  gwebsvrurl: string;
-  gwebsvrdocurl: string;
-  gisDebug: Boolean;
+  gwebsvrurl: string = '';
+  gwebsvrdocurl: string = '';
+  gisDebug: Boolean = False;
+  gdllpath: string = ''; 
 
 function GetMyPath: string;
 var
-  ModuleName: string;
-  str: string;
+  buf: array[0..MAX_PATH] of AnsiChar;
+  hinst: HMODULE;
+  fileName: string;
 begin
-  SetLength(ModuleName, 255);
-  GetModuleFileName(HInstance, PChar(ModuleName), Length(ModuleName));
-  str := ExtractFileDir(ModuleName);
-  Result := str
+  if gdllpath = '' then
+  begin
+    hinst := GetModuleHandle('HISDHC.dll');
+    GetModuleFileName(hinst, buf, Length(buf));
+    fileName := buf;
+    gdllpath := ExtractFileDir(fileName);
+  end;
+  Result := gdllpath;
 end;
 
 function WriteTxt(strWrite: WideString): Boolean;
@@ -96,13 +102,16 @@ var
   myinifile: TIniFile;
   mypath: string;
 begin
-  mypath := GetMyPath + '\weburl.ini';
-  if FileExists(mypath) then
+  if gwebsvrurl = '' then
   begin
-    myinifile := TIniFile.create(mypath); //
-    gwebsvrurl := myinifile.readstring('webservice', 'url', ''); //
-    gisDebug := myinifile.ReadBool('webservice', 'debug', False); //
-    FreeAndNil(myinifile);
+    mypath := GetMyPath + '\weburl.ini';
+    if FileExists(mypath) then
+    begin
+      myinifile := TIniFile.create(mypath); //
+      gwebsvrurl := myinifile.readstring('webservice', 'url', ''); //
+      gisDebug := myinifile.ReadBool('webservice', 'debug', False); //
+      FreeAndNil(myinifile);
+    end;
   end;
   Result := gwebsvrurl;
 end;
@@ -112,13 +121,16 @@ var
   myinifile: TIniFile;
   mypath: string;
 begin
-  mypath := GetMyPath + '\weburl.ini';
-  if FileExists(mypath) then
+  if gwebsvrdocurl = '' then
   begin
-    myinifile := TIniFile.create(mypath); //
-    gwebsvrdocurl := myinifile.readstring('webservice', 'docurl', ''); //
-    gisDebug := myinifile.ReadBool('webservice', 'debug', False); //
-    FreeAndNil(myinifile);
+    mypath := GetMyPath + '\weburl.ini';
+    if FileExists(mypath) then
+    begin
+      myinifile := TIniFile.create(mypath); //
+      gwebsvrdocurl := myinifile.readstring('webservice', 'docurl', ''); //
+      gisDebug := myinifile.ReadBool('webservice', 'debug', False); //
+      FreeAndNil(myinifile);
+    end;
   end;
   Result := gwebsvrdocurl;
 end;
@@ -485,9 +497,9 @@ begin
     soap := DHC.GetWebRisServiceSoap(true, GetWebSVRUrl, rio);
     if gisDebug then
     begin
-      WriteTxt(Input + ': ' + Input1);
+      WriteTxt(Input + ': ' + WideCharToString(Input1));
     end;
-    str := soap.DHCWebInterface(Input, WideString(Input1));
+    str := soap.DHCWebInterface(WideString(Input), WideString(Input1));
     if gisDebug then
     begin
       WriteTxt(str);
@@ -496,10 +508,6 @@ begin
   except
     on ex: Exception do
     begin
-      MessageBox(0, PAnsiChar(GetMyPath), '', MB_OK);
-      MessageBox(0, PAnsiChar(GetWebSVRUrl), '', MB_OK);
-      MessageBox(0, PAnsiChar(WideCharToString(Input1)), '', MB_OK);
-      MessageBox(0, PAnsiChar(ex.Message), '', MB_OK);
       if gisDebug then
       begin
         WriteTxt(ex.Message);
